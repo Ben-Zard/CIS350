@@ -1,5 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
+import java.io.*;
+import java.nio.*;
+import java.nio.file.Files;
+import java.util.ArrayList;
 
 public class App {
     public static void main(String[] args) throws Exception {
@@ -33,6 +37,19 @@ public class App {
         JTextArea passwordInput = new JTextArea("Password");
         row2.add(usernameInput);
         row2.add(passwordInput);
+
+        //list songs
+        ArrayList<String> songs = new ArrayList<String>();
+        File folder = new File("./src/songs");
+        System.out.println(folder.exists());
+        File[] listOfFiles = folder.listFiles();
+        for (int i = 0; i < listOfFiles.length; i++) {
+            songs.add(listOfFiles[i].getName());
+        }
+        String[] array = songs.toArray(new String[0]) ;
+        JComboBox<String> songList = new JComboBox<String>(array);
+        songList.setPreferredSize(new Dimension(400,20));
+        row1.add(songList);
 
         // buttons
         JButton playButton = new javax.swing.JButton();
