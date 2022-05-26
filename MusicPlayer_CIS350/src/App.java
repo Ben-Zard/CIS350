@@ -10,6 +10,12 @@ public class App {
         showGUI();
     }
 
+    /** 
+     * This is a sample of javadocs 
+     * @return void
+     * 
+     * 
+    */
     public static void showGUI() {
         // create frame
         JFrame frame = new JFrame();
