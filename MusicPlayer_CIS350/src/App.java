@@ -1,7 +1,15 @@
 import javax.swing.*;
+
 import javazoom.jl.decoder.JavaLayerException;
-import javazoom.jl.player.Player;
 import javazoom.jl.player.advanced.AdvancedPlayer;
+
+import se.michaelthelin.spotify.*;
+import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
+import se.michaelthelin.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
+import se.michaelthelin.spotify.requests.data.search.simplified.SearchTracksRequest;
+import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials;
+import se.michaelthelin.spotify.model_objects.specification.Paging;
+import se.michaelthelin.spotify.model_objects.specification.Track;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -13,8 +21,19 @@ public class App {
     private static String musicfolder = "./src/songs/";
     private static AdvancedPlayer player;
 
+    static final String spotifyClientID = "88950e472b574f9fa0150e8e0c33637f";
+    static final String spotifyClientSecret = "e0bf6fc402ee43c797187d9c5a5727a7";
+
+    private static final SpotifyApi spotifyApi = new SpotifyApi.Builder()
+            .setClientId(spotifyClientID)
+            .setClientSecret(spotifyClientSecret)
+            .build();
+    private static final ClientCredentialsRequest clientCredentialsRequest = spotifyApi.clientCredentials()
+            .build();
+
     public static void main(String[] args) throws Exception {
         showGUI();
+        getSpotifyToken();
     }
 
     /**
@@ -57,7 +76,6 @@ public class App {
         // list songs
         ArrayList<String> songs = new ArrayList<String>();
         File folder = new File(musicfolder);
-        System.out.println(folder.exists());
         File[] listOfFiles = folder.listFiles();
         if (listOfFiles != null) {
             for (int i = 0; i < listOfFiles.length; i++) {
@@ -75,12 +93,12 @@ public class App {
         playButton.setText("play");
         playButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                    try {
-                        playSong();
-                    } catch (FileNotFoundException | JavaLayerException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
-                    }
+                try {
+                    playSong();
+                } catch (FileNotFoundException | JavaLayerException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
             }
         });
         JButton pauseButton = new javax.swing.JButton();
@@ -100,6 +118,7 @@ public class App {
         row4.add(prevButton);
         row4.add(nextButton);
 
+        //progress bar
         JProgressBar progressBar = new JProgressBar();
         row5.add(progressBar);
 
@@ -107,24 +126,61 @@ public class App {
         frame.setVisible(true);
     }
 
+    /**
+     * https://github.com/manjurulhoque/play-mp3-java
+     * @throws JavaLayerException
+     * @throws FileNotFoundException
+     */
     public static void playSong() throws JavaLayerException, FileNotFoundException {
         String selectedSong = musicfolder + songList.getSelectedItem().toString();
         FileInputStream fis = new FileInputStream(selectedSong);
 
         player = new AdvancedPlayer(fis);
-        new Thread(){
-            public void run(){
-              try {
-                player.play();
-            } catch (JavaLayerException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+        new Thread() {
+            public void run() {
+                try {
+                    player.play();
+                } catch (JavaLayerException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
-            }
-          }.start();
+        }.start();
     }
 
+    /**
+     * Stop playing song
+     */
     public static void stopSong() {
         player.close();
+    }
+
+    /**
+     * https://github.com/spotify-web-api-java/spotify-web-api-java#Documentation
+     * @throws org.apache.hc.core5.http.ParseException
+     */
+    public static void getSpotifyToken() throws org.apache.hc.core5.http.ParseException {
+        try {
+            final ClientCredentials clientCredentials = clientCredentialsRequest.execute();
+      
+            // Set access token for further "spotifyApi" object usage
+            spotifyApi.setAccessToken(clientCredentials.getAccessToken());
+      
+            System.out.println("Token: " + clientCredentials.getAccessToken());
+            System.out.println("Expires in: " + clientCredentials.getExpiresIn());
+          } catch (IOException | SpotifyWebApiException e) {
+            System.out.println("Error: " + e.getMessage());
+          }
+    }
+
+    public static void findSimilarSong(String title) throws org.apache.hc.core5.http.ParseException {
+        SearchTracksRequest searchTracksRequest = spotifyApi.searchTracks(title).build();
+        try {
+            final Paging<Track> trackPaging = searchTracksRequest.execute();
+      
+            System.out.println("Total: " + trackPaging.getTotal());
+          } catch (IOException | SpotifyWebApiException e) {
+            System.out.println("Error: " + e.getMessage());
+          }
     }
 }
