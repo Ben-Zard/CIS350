@@ -34,6 +34,7 @@ public class App {
     public static void main(String[] args) throws Exception {
         showGUI();
         getSpotifyToken();
+        // findSimilarSong("yo");
     }
 
     /**
@@ -177,7 +178,7 @@ public class App {
         SearchTracksRequest searchTracksRequest = spotifyApi.searchTracks(title).build();
         try {
             final Paging<Track> trackPaging = searchTracksRequest.execute();
-      
+            // System.out.println(trackPaging.getItems()[0].toString());
             System.out.println("Total: " + trackPaging.getTotal());
           } catch (IOException | SpotifyWebApiException e) {
             System.out.println("Error: " + e.getMessage());
