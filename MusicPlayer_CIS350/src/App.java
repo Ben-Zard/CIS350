@@ -31,17 +31,10 @@ public class App {
     private static final ClientCredentialsRequest clientCredentialsRequest = spotifyApi.clientCredentials()
             .build();
 
-    public static void main(String[] args) throws Exception {
-        showGUI();
-        getSpotifyToken();
-        // findSimilarSong("yo");
-    }
-
     /**
-     * This is a sample of javadocs
-     * 
+     * Creates the user interface for the spotify playlist generator
+     * Within the method, connection to the spotify API is included as of now
      * @return void
-     * 
      * 
      */
     public static void showGUI() {
@@ -183,5 +176,11 @@ public class App {
           } catch (IOException | SpotifyWebApiException e) {
             System.out.println("Error: " + e.getMessage());
           }
+    }
+
+    public static void main(String[] args) throws Exception {
+        showGUI();
+        getSpotifyToken();
+        // findSimilarSong("yo");
     }
 }
