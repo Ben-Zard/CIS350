@@ -11,15 +11,16 @@ import java.util.ArrayList;
 public class Background extends JFrame {
     private static JComboBox<String> songList;
     private static String musicfolder = "./src/songs/";
+    private static String backgroundImg = "./src/img/test2.jpg";
 
 
     public Background() {
         super("Background image");
-        Image img = Toolkit.getDefaultToolkit().getImage("C:\\Users\\Ben Zardus\\JAVACODE\\test\\src\\test.jpg");
+        Image img = Toolkit.getDefaultToolkit().getImage(backgroundImg);
         JPanel frame = new BackgroundPanel(img);
         getContentPane().add(frame);
 
-        setSize(700, 640);
+        setSize(500, 500);
         GridLayout layout = new GridLayout(5, 10);
         frame.setLayout(layout);
 
