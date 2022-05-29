@@ -1,20 +1,17 @@
-import javax.swing.*;
-
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.advanced.AdvancedPlayer;
-
-import se.michaelthelin.spotify.*;
+import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
-import se.michaelthelin.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
-import se.michaelthelin.spotify.requests.data.search.simplified.SearchTracksRequest;
 import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.Track;
+import se.michaelthelin.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
+import se.michaelthelin.spotify.requests.data.search.simplified.SearchTracksRequest;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.util.ArrayList;
+import javax.swing.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class App {
     private static JComboBox<String> songList;
@@ -31,12 +28,15 @@ public class App {
     private static final ClientCredentialsRequest clientCredentialsRequest = spotifyApi.clientCredentials()
             .build();
 
-    /**
+/*
+    */
+/**
      * Creates the user interface for the spotify playlist generator
      * Within the method, connection to the spotify API is included as of now
      * @return void
      * 
-     */
+     *//*
+
     public static void showGUI() {
         // create frame
         JFrame frame = new JFrame();
@@ -119,6 +119,7 @@ public class App {
         // display after everything is set up
         frame.setVisible(true);
     }
+*/
 
     /**
      * https://github.com/manjurulhoque/play-mp3-java
@@ -179,7 +180,8 @@ public class App {
     }
 
     public static void main(String[] args) throws Exception {
-        showGUI();
+   Background app = new Background();
+        app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         getSpotifyToken();
         // findSimilarSong("yo");
     }
