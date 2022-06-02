@@ -1,14 +1,24 @@
-/*
- * Author:  Owen Gibson
- * Project: CIS350 Embedded System Contribution
- * Date:    5/23/21
+/**
+ * @file sketch_may23a.ino
+ * @author Owen Gibson (gibsonow@mail.gvsu.edu)
+ * @brief Program for embedded arduino system used in CIS350 Final Project
+ * @version 0.1
+ * @date 2022-06-01
+ * 
+ * @copyright Copyright (c) 2022
+ * 
  */
+
 #include <Keyboard.h>
 
 int backPin = 9;                  // Set button pins
 int pausePin = 10;
 int forwardPin = 4;
 
+/**
+ * @brief Initialization loop (runs 1 time)
+ * 
+ */
 void setup()
 {
   pinMode(backPin, INPUT);        // Set the button as an input
@@ -23,6 +33,10 @@ void setup()
   Keyboard.begin();               //Init keyboard emulation
 }
 
+/**
+ * @brief Continuous loop (runs until shutdown of device)
+ * 
+ */
 void loop()
 {
   if (digitalRead(backPin) == 0)  // if the button goes low
@@ -33,7 +47,7 @@ void loop()
     Keyboard.release(KEY_LEFT_CTRL);
     Keyboard.release(KEY_LEFT_ARROW);
 
-    delay(300);
+    delay(300);                   // debounce window
   }
   if (digitalRead(pausePin) == 0)  
   {
