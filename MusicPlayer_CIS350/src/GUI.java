@@ -2,6 +2,9 @@ import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.advanced.AdvancedPlayer;
 
 import javax.swing.*;
+
+import org.apache.hc.client5.http.impl.routing.SystemDefaultRoutePlanner;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,12 +13,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-public class GUI extends JFrame {
+public class GUI extends JFrame{
     private static JComboBox<String> songList;
     private static String musicfolder = "./src/songs/";
     private static String backgroundImg = "./src/img/test2.jpg";
     private static AdvancedPlayer player;
-
 
     /**
      * Creates the user interface for the spotify playlist generator
@@ -56,8 +58,8 @@ public class GUI extends JFrame {
         File folder = new File(musicfolder);
         File[] listOfFiles = folder.listFiles();
         if (listOfFiles != null) {
-            for (int i = 0; i < listOfFiles.length; i++) {
-                songs.add(listOfFiles[i].getName());
+            for (File file : listOfFiles) {
+                songs.add(file.getName());
             }
         }
 
@@ -67,29 +69,43 @@ public class GUI extends JFrame {
         row1.add(songList);
 
         // buttons
-        JButton playButton = new javax.swing.JButton();
-        playButton.setText("play");
+        JButton playButton = new JButton();
+        playButton.setText("Play");
         playButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
                     playSong();
                 } catch (FileNotFoundException | JavaLayerException e1) {
-                    // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
             }
         });
-        JButton pauseButton = new javax.swing.JButton();
-        pauseButton.setText("pause");
+
+        JButton pauseButton = new JButton();
+        pauseButton.setText("Pause");
         pauseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                stopSong();
+                pauseSong();
+                //Needs to pause song but not stop it
+                //It restarts the song as of now when play is pushed again  
             }
         });
+
         JButton prevButton = new JButton();
-        prevButton.setText("prev");
+        prevButton.setText("Prev");
+        prevButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                //Need to figure out how to go back the song that was just played
+            }
+        });
+
         JButton nextButton = new JButton();
-        nextButton.setText("next");
+        nextButton.setText("Next");
+        nextButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Need to figure out how to go to next song in the list  
+            }
+        });
 
 
         row4.add(playButton);
@@ -106,7 +122,6 @@ public class GUI extends JFrame {
         row2.setOpaque(false);
         row4.setOpaque(false);
         row5.setOpaque(false);
-
         //
         setVisible(true);
     }
@@ -126,7 +141,6 @@ public class GUI extends JFrame {
                 try {
                     player.play();
                 } catch (JavaLayerException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
@@ -136,8 +150,10 @@ public class GUI extends JFrame {
     /**
      * Stop playing song
      */
-    public static void stopSong() {
+    public static void pauseSong() {
         player.close();
+        //Needs to just pause the song and not stop it 
+        //Changed method name to pauseSong and replaced line 86
     }
 
    

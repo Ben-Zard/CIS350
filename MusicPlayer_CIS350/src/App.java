@@ -65,5 +65,6 @@ public class App {
         gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         getSpotifyToken();
         //findSimilarSong("yo");
+        
     }
 }
