@@ -1,0 +1,19 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "MusicPlayer_CIS350/lib/commons-codec-1.15.jar",
+        "MusicPlayer_CIS350/lib/gson-2.9.0.jar",
+        "MusicPlayer_CIS350/lib/httpclient5-5.1.3.jar",
+        "MusicPlayer_CIS350/lib/httpclient5-cache-5.1.3.jar",
+        "MusicPlayer_CIS350/lib/httpcore5-5.1.3.jar",
+        "MusicPlayer_CIS350/lib/httpcore5-h2-5.1.3.jar",
+        "MusicPlayer_CIS350/lib/jackson-annotations-2.13.2.jar",
+        "MusicPlayer_CIS350/lib/jackson-core-2.13.2.jar",
+        "MusicPlayer_CIS350/lib/jackson-databind-2.13.2.2.jar",
+        "MusicPlayer_CIS350/lib/jl-1.0.1.jar",
+        "MusicPlayer_CIS350/lib/nv-i18n-1.29.jar",
+        "MusicPlayer_CIS350/lib/slf4j-api-1.7.36.jar",
+        "MusicPlayer_CIS350/lib/spotify-web-api-java-1.5.0.jar",
+        "MusicPlayer_CIS350/lib/spotify-web-api-java-7.1.0.jar"
+    ]
+}
