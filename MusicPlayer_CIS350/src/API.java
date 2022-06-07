@@ -3,8 +3,11 @@ import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials;
 import se.michaelthelin.spotify.model_objects.specification.Artist;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
+import se.michaelthelin.spotify.model_objects.specification.Recommendations;
 import se.michaelthelin.spotify.model_objects.specification.Track;
+import se.michaelthelin.spotify.model_objects.specification.TrackSimplified;
 import se.michaelthelin.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
+import se.michaelthelin.spotify.requests.data.browse.GetRecommendationsRequest;
 import se.michaelthelin.spotify.requests.data.browse.miscellaneous.GetAvailableGenreSeedsRequest;
 import se.michaelthelin.spotify.requests.data.search.simplified.SearchArtistsRequest;
 import se.michaelthelin.spotify.requests.data.search.simplified.SearchTracksRequest;
@@ -109,5 +112,22 @@ public class API {
             System.out.println("Error: " + e.getMessage());
           }
         return null;
+    }
+
+    public TrackSimplified[] getGenreRec(String genre) throws ParseException {
+      GetRecommendationsRequest getRecsRequest = spotifyApi.getRecommendations().seed_genres(genre).build();
+      TrackSimplified[] tracks = getRecommendations(getRecsRequest);
+      return tracks;
+    }
+
+    private TrackSimplified[] getRecommendations(GetRecommendationsRequest getRecsRequest) throws ParseException {
+      try {
+        final Recommendations recsList = getRecsRequest.execute();
+        TrackSimplified[] tracks = recsList.getTracks();
+        return tracks;
+      } catch (IOException | SpotifyWebApiException e) {
+        System.out.println("Error: " + e.getMessage());
+      }
+      return null;
     }
 }
