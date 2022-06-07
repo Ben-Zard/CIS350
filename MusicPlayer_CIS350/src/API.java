@@ -1,12 +1,18 @@
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials;
+import se.michaelthelin.spotify.model_objects.specification.Artist;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.Track;
 import se.michaelthelin.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
+import se.michaelthelin.spotify.requests.data.browse.miscellaneous.GetAvailableGenreSeedsRequest;
+import se.michaelthelin.spotify.requests.data.search.simplified.SearchArtistsRequest;
 import se.michaelthelin.spotify.requests.data.search.simplified.SearchTracksRequest;
 
 import javax.swing.*;
+
+import org.apache.hc.core5.http.ParseException;
+
 import java.io.IOException;
 
 public class API {
@@ -20,6 +26,15 @@ public class API {
             .build();
     private static final ClientCredentialsRequest clientCredentialsRequest = spotifyApi.clientCredentials()
             .build();
+
+    public API() {
+      try {
+        this.getSpotifyToken();
+      } catch (ParseException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
 
     public void setGUI(GUI setgui) {
         this.gui = setgui;
@@ -53,7 +68,7 @@ public class API {
      * @param title
      * @throws org.apache.hc.core5.http.ParseException
      */
-    public static void findSimilarSong(String title) throws org.apache.hc.core5.http.ParseException {
+    public void searchSong(String title) throws org.apache.hc.core5.http.ParseException {
         SearchTracksRequest searchTracksRequest = spotifyApi.searchTracks(title).build();
         try {
             final Paging<Track> trackPaging = searchTracksRequest.execute();
@@ -62,5 +77,37 @@ public class API {
           } catch (IOException | SpotifyWebApiException e) {
             System.out.println("Error: " + e.getMessage());
           }
+    }
+
+    /**
+     * get list of similar artists based on string input
+     * @param title
+     * @throws org.apache.hc.core5.http.ParseException
+     */
+    public Paging<Artist> searchArtist(String title) throws org.apache.hc.core5.http.ParseException {
+        SearchArtistsRequest searchArtistRequest = spotifyApi.searchArtists(title).build();
+        try {
+            final Paging<Artist> artistPaging = searchArtistRequest.execute();
+            return artistPaging;
+          } catch (IOException | SpotifyWebApiException e) {
+            System.out.println("Error: " + e.getMessage());
+          }
+          return null;
+    }
+
+    /**
+     * get list of genres as listed by spotify API
+     * @return
+     * @throws ParseException
+     */
+    public String[] getGenres() throws ParseException {
+        GetAvailableGenreSeedsRequest getGenresRequest = spotifyApi.getAvailableGenreSeeds().build();
+        try {
+            final String[] genreList = getGenresRequest.execute();
+            return genreList;
+          } catch (IOException | SpotifyWebApiException e) {
+            System.out.println("Error: " + e.getMessage());
+          }
+        return null;
     }
 }

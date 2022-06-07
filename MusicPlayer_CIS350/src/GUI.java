@@ -4,6 +4,7 @@ import javazoom.jl.player.advanced.AdvancedPlayer;
 import javax.swing.*;
 
 import org.apache.hc.client5.http.impl.routing.SystemDefaultRoutePlanner;
+import org.apache.hc.core5.http.ParseException;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -16,12 +17,15 @@ import java.util.ArrayList;
 public class GUI extends JFrame{
     private API api;
 
-    private static JComboBox<String> songList;
+    public static JComboBox<String> songList;
+    public static JComboBox<String> genreList;
+
     private static String musicfolder = "./src/songs/";
     private static String backgroundImg = "./src/img/test2.jpg";
     private static AdvancedPlayer player;
 
     public void setAPI(API setapi) {
+        System.out.println("[p");
         this.api = setapi;
     }
 
@@ -34,6 +38,8 @@ public class GUI extends JFrame{
      */
     public GUI() {
         super("Background image");
+        this.api = new API();
+        api.setGUI(this);
         Image img = Toolkit.getDefaultToolkit().getImage(backgroundImg);
         JPanel frame = new BackgroundPanel(img);
         getContentPane().add(frame);
@@ -55,13 +61,23 @@ public class GUI extends JFrame{
         JPanel row5 = new JPanel();
         frame.add(row5);
 
-        // text inputs
+        // song input
         JTextArea songInput = new JTextArea("Select Song");
-        JTextArea artistInput = new JTextArea("Select Artist");
-        JTextArea genreInput = new JTextArea("Select Genre");
         row2.add(songInput);
+
+        // artist input
+        JTextArea artistInput = new JTextArea("Select Artist");
         row2.add(artistInput);
-        row2.add(genreInput);
+
+        JTextArea genreInput = new JTextArea("Select Genre");
+        try {
+            String[] spotifyGenreList = api.getGenres();
+            genreList = new JComboBox<String>(spotifyGenreList);
+        } catch (ParseException e2) {
+            // TODO Auto-generated catch block
+            e2.printStackTrace();
+        }
+        row2.add(genreList);
 
         // list songs
         ArrayList<String> songs = new ArrayList<String>();
