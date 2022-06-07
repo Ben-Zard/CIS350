@@ -14,10 +14,20 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class GUI extends JFrame{
+    private API api;
+
     private static JComboBox<String> songList;
     private static String musicfolder = "./src/songs/";
     private static String backgroundImg = "./src/img/test2.jpg";
     private static AdvancedPlayer player;
+
+    public void setAPI(API setapi) {
+        this.api = setapi;
+    }
+
+    public API getAPI() {
+        return this.api;
+    }
 
     /**
      * Creates the user interface for the spotify playlist generator
