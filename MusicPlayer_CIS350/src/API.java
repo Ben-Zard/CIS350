@@ -16,12 +16,16 @@ import javax.swing.*;
 
 import org.apache.hc.core5.http.ParseException;
 
+import com.fasterxml.jackson.databind.deser.impl.ExternalTypeHandler.Builder;
+
 import java.io.IOException;
 
 public class API {
     private GUI gui;
     static final String spotifyClientID = "88950e472b574f9fa0150e8e0c33637f";
     static final String spotifyClientSecret = "e0bf6fc402ee43c797187d9c5a5727a7";
+    static public String trackID = "";
+    static public String artistID = "";
 
     private static final SpotifyApi spotifyApi = new SpotifyApi.Builder()
             .setClientId(spotifyClientID)
@@ -75,8 +79,8 @@ public class API {
         SearchTracksRequest searchTracksRequest = spotifyApi.searchTracks(title).build();
         try {
             final Paging<Track> trackPaging = searchTracksRequest.execute();
-            //System.out.println(trackPaging.getItems()[0].toString());
             System.out.println("Total: " + trackPaging.getTotal());
+            trackID = trackPaging.getItems()[0].getId();
           } catch (IOException | SpotifyWebApiException e) {
             System.out.println("Error: " + e.getMessage());
           }
@@ -87,15 +91,15 @@ public class API {
      * @param title
      * @throws org.apache.hc.core5.http.ParseException
      */
-    public Paging<Artist> searchArtist(String title) throws org.apache.hc.core5.http.ParseException {
+    public void searchArtist(String title) throws org.apache.hc.core5.http.ParseException {
         SearchArtistsRequest searchArtistRequest = spotifyApi.searchArtists(title).build();
         try {
             final Paging<Artist> artistPaging = searchArtistRequest.execute();
-            return artistPaging;
+            System.out.println("Total: " + artistPaging.getTotal());
+            artistID = artistPaging.getItems()[0].getId();
           } catch (IOException | SpotifyWebApiException e) {
             System.out.println("Error: " + e.getMessage());
           }
-          return null;
     }
 
     /**
@@ -106,25 +110,34 @@ public class API {
     public String[] getGenres() throws ParseException {
         GetAvailableGenreSeedsRequest getGenresRequest = spotifyApi.getAvailableGenreSeeds().build();
         try {
-            final String[] genreList = getGenresRequest.execute();
-            return genreList;
+            return getGenresRequest.execute();
           } catch (IOException | SpotifyWebApiException e) {
             System.out.println("Error: " + e.getMessage());
           }
-        return null;
-    }
+          return null;
+        }
 
     public TrackSimplified[] getGenreRec(String genre) throws ParseException {
       GetRecommendationsRequest getRecsRequest = spotifyApi.getRecommendations().seed_genres(genre).build();
       TrackSimplified[] tracks = getRecommendations(getRecsRequest);
       return tracks;
     }
+    
+    public TrackSimplified[] getSongRec(String song) throws ParseException {
+      GetRecommendationsRequest getRecsRequest = spotifyApi.getRecommendations().seed_tracks(song).build();
+      TrackSimplified[] tracks = getRecommendations(getRecsRequest);
+      return tracks;
+    }
+    public TrackSimplified[] getArtistRec(String artist) throws ParseException {
+      GetRecommendationsRequest getRecsRequest = spotifyApi.getRecommendations().seed_artists(artist).build();
+      TrackSimplified[] tracks = getRecommendations(getRecsRequest);
+      return tracks;
+    }
 
-    private TrackSimplified[] getRecommendations(GetRecommendationsRequest getRecsRequest) throws ParseException {
+    public TrackSimplified[] getRecommendations(GetRecommendationsRequest getRecsRequest) throws ParseException {
       try {
         final Recommendations recsList = getRecsRequest.execute();
-        TrackSimplified[] tracks = recsList.getTracks();
-        return tracks;
+        return recsList.getTracks();
       } catch (IOException | SpotifyWebApiException e) {
         System.out.println("Error: " + e.getMessage());
       }
