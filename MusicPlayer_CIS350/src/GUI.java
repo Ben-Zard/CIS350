@@ -3,7 +3,6 @@ import javazoom.jl.player.advanced.AdvancedPlayer;
 import org.apache.hc.core5.http.ParseException;
 import se.michaelthelin.spotify.model_objects.specification.ArtistSimplified;
 import se.michaelthelin.spotify.model_objects.specification.TrackSimplified;
-import se.michaelthelin.spotify.SpotifyApi;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +14,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-public class GUI extends JFrame{
+public class GUI extends JFrame {
     private API api;
 
     public static JComboBox<String> localSongList;
@@ -31,16 +30,26 @@ public class GUI extends JFrame{
     private static String backgroundImg = "./src/img/test2.jpg";
     private static AdvancedPlayer player;
 
+    /**
+     * Set API to handle data from spotify
+     * 
+     * @param setapi
+     */
     public void setAPI(API setapi) {
         this.api = setapi;
     }
 
+    /**
+     * Get associated API for this GUI
+     * 
+     * @return
+     */
     public API getAPI() {
         return this.api;
     }
 
     /**
-     * Creates the user interface for the spotify playlist generator
+     * Create the user interface for the spotify playlist generator
      */
     public GUI() {
         super("Background image");
@@ -51,12 +60,12 @@ public class GUI extends JFrame{
         getContentPane().add(frame);
 
         setSize(500, 500);
-        GridLayout layout = new GridLayout(7, 10);
+        GridLayout layout = new GridLayout(6, 10);
         frame.setLayout(layout);
 
         ///// Keybindings /////
 
-        //playbutton
+        // playbutton
         InputMap play = frame.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap player = frame.getActionMap();
         play.put(KeyStroke.getKeyStroke(KeyEvent.VK_1, 0), "1");
@@ -72,7 +81,7 @@ public class GUI extends JFrame{
                 }
             }
         });
-        //pausebutton
+        // pausebutton
         InputMap pause = frame.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap pauser = frame.getActionMap();
         pause.put(KeyStroke.getKeyStroke(KeyEvent.VK_2, 0), "2");
@@ -82,27 +91,26 @@ public class GUI extends JFrame{
                 pauseSong();
             }
         });
-        //prevbutton
+        // prevbutton
         InputMap prev = frame.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap prever = frame.getActionMap();
         prev.put(KeyStroke.getKeyStroke(KeyEvent.VK_3, 0), "3");
         prever.put("3", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //prevSong();
+                // prevSong();
             }
         });
-        //nextbutton
+        // nextbutton
         InputMap next = frame.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap nexter = frame.getActionMap();
         next.put(KeyStroke.getKeyStroke(KeyEvent.VK_4, 0), "4");
         nexter.put("4", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               //nextSong();
+                // nextSong();
             }
         });
-
 
         // add rows
         JPanel row1 = new JPanel();
@@ -117,8 +125,6 @@ public class GUI extends JFrame{
         frame.add(row5);
         JPanel row6 = new JPanel();
         frame.add(row6);
-        JPanel row7 = new JPanel();
-        frame.add(row7);
 
         ///// Row 1 /////
 
@@ -139,12 +145,7 @@ public class GUI extends JFrame{
 
         ///// Row 2 /////
 
-        
-
-        ///// Row 3 /////
-        
-
-        //genre list
+        // genre list
         try {
             String[] spotifyGenreList = api.getGenres();
             searchGenreList = new JComboBox<String>(spotifyGenreList);
@@ -154,51 +155,49 @@ public class GUI extends JFrame{
         }
         searchGenreList.setPreferredSize(new Dimension(85, 20));
         JLabel genreLabel2 = new JLabel("Genres");
-        row3.add(genreLabel2);
-        row3.add(searchGenreList);
+        row2.add(genreLabel2);
+        row2.add(searchGenreList);
 
         // song inputs
         JLabel songlabel1 = new JLabel("Select Song");
-        row3.add(songlabel1);
+        row2.add(songlabel1);
         songInput = new JTextField();
         songInput.setPreferredSize(new Dimension(65, 15));
-        row3.add(songInput);
-
+        row2.add(songInput);
 
         // artist input
         JLabel artistLabel1 = new JLabel("Select Artist");
-        row3.add(artistLabel1);
+        row2.add(artistLabel1);
         artistInput = new JTextField();
         artistInput.setPreferredSize(new Dimension(65, 15));
-        row3.add(artistInput);
+        row2.add(artistInput);
 
-
-        ///// Row 4 /////
+        ///// Row 3 /////
         JLabel generateLabel = new JLabel("Generate Playlist By:");
-        row4.add(generateLabel);
+        row3.add(generateLabel);
 
         JButton genPlaylistSong = new JButton("Song");
         genPlaylistSong.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Generate playlist by song");
-            // Generate playlist from song
-            String song = songInput.getText().toString();
-            try {
-                api.searchSong(song);
-                TrackSimplified[] matches = api.getSongRec(api.trackID);
-                generatedPlaylist.removeAllItems();
-                if (matches.length > 0) {
-                    for (TrackSimplified t : matches){
-                        String tracklabel = generateTrackLabel(t);
-                        generatedPlaylist.addItem(tracklabel);
+                // Generate playlist from song
+                String song = songInput.getText().toString();
+                try {
+                    api.searchSong(song);
+                    TrackSimplified[] matches = api.getSongRec(api.trackID);
+                    generatedPlaylist.removeAllItems();
+                    if (matches.length > 0) {
+                        for (TrackSimplified t : matches) {
+                            String tracklabel = generateTrackLabel(t);
+                            generatedPlaylist.addItem(tracklabel);
+                        }
                     }
+                } catch (ParseException e1) {
+                    e1.printStackTrace();
                 }
-            } catch (ParseException e1) {
-                e1.printStackTrace();
-            }
             }
         });
-        row4.add(genPlaylistSong);
+        row3.add(genPlaylistSong);
 
         JButton genPlaylistArtist = new JButton("Artist");
         genPlaylistArtist.addActionListener(new ActionListener() {
@@ -212,7 +211,7 @@ public class GUI extends JFrame{
                     TrackSimplified[] matches = api.getArtistRec(api.artistID);
                     generatedPlaylist.removeAllItems();
                     if (matches.length > 0) {
-                        for (TrackSimplified t : matches){
+                        for (TrackSimplified t : matches) {
                             String tracklabel = generateTrackLabel(t);
                             generatedPlaylist.addItem(tracklabel);
                         }
@@ -222,8 +221,8 @@ public class GUI extends JFrame{
                 }
             }
         });
-        row4.add(genPlaylistArtist);
-        
+        row3.add(genPlaylistArtist);
+
         JButton genPlaylistGenre = new JButton("Genre");
         genPlaylistGenre.addActionListener(new ActionListener() {
             // Generate playlist from genre
@@ -233,7 +232,7 @@ public class GUI extends JFrame{
                     TrackSimplified[] matches = api.getGenreRec(genre);
                     generatedPlaylist.removeAllItems();
                     if (matches.length > 0) {
-                        for (TrackSimplified t : matches){
+                        for (TrackSimplified t : matches) {
                             String tracklabel = generateTrackLabel(t);
                             generatedPlaylist.addItem(tracklabel);
                         }
@@ -244,17 +243,17 @@ public class GUI extends JFrame{
                 }
             }
         });
-        row4.add(genPlaylistGenre);
+        row3.add(genPlaylistGenre);
 
-        ///// Row 5 /////
+        ///// Row 4 /////
 
         JLabel playlistLabel = new JLabel("Playlist:");
-        row5.add(playlistLabel);
+        row4.add(playlistLabel);
         generatedPlaylist = new JComboBox<String>(new String[0]);
         generatedPlaylist.setPreferredSize(new Dimension(350, 20));
-        row5.add(generatedPlaylist);
+        row4.add(generatedPlaylist);
 
-        ///// Row 6 /////
+        ///// Row 5 /////
 
         // song nav buttons
         JButton playButton = new JButton();
@@ -274,8 +273,8 @@ public class GUI extends JFrame{
         pauseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 pauseSong();
-                //Needs to pause song but not stop it
-                //It restarts the song as of now when play is pushed again  
+                // Needs to pause song but not stop it
+                // It restarts the song as of now when play is pushed again
             }
         });
 
@@ -283,7 +282,7 @@ public class GUI extends JFrame{
         prevButton.setText("Prev");
         prevButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //Need to figure out how to go back the song that was just played
+                // Need to figure out how to go back the song that was just played
             }
         });
 
@@ -291,21 +290,20 @@ public class GUI extends JFrame{
         nextButton.setText("Next");
         nextButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Need to figure out how to go to next song in the list  
+                // Need to figure out how to go to next song in the list
             }
         });
 
+        row5.add(playButton);
+        row5.add(pauseButton);
+        row5.add(prevButton);
+        row5.add(nextButton);
 
-        row6.add(playButton);
-        row6.add(pauseButton);
-        row6.add(prevButton);
-        row6.add(nextButton);
+        ///// Row 6 /////
 
-        ///// Row 7 /////
-
-        //progress bar
+        // progress bar
         JProgressBar progressBar = new JProgressBar();
-        row7.add(progressBar);
+        row6.add(progressBar);
 
         row1.setOpaque(false);
         row3.setOpaque(false);
@@ -313,19 +311,26 @@ public class GUI extends JFrame{
         row4.setOpaque(false);
         row5.setOpaque(false);
         row6.setOpaque(false);
-        row7.setOpaque(false);
         // Start
         setVisible(true);
     }
 
+    /**
+     * Generate a track label string from track object
+     * 
+     * @param track
+     * @return String
+     */
     private String generateTrackLabel(TrackSimplified track) {
         ArtistSimplified[] artists = track.getArtists();
-        String tracklabel = track.getName() + " (" +  artists[0].getName()+ ")";
+        String tracklabel = track.getName() + " (" + artists[0].getName() + ")";
         return tracklabel;
     }
 
     /**
+     * Play local audio foile
      * https://github.com/manjurulhoque/play-mp3-java
+     * 
      * @throws JavaLayerException
      * @throws FileNotFoundException
      */
@@ -350,9 +355,7 @@ public class GUI extends JFrame{
      */
     public static void pauseSong() {
         player.close();
-        //Needs to just pause the song and not stop it 
-        //Changed method name to pauseSong and replaced line 86
+        // Needs to just pause the song and not stop it
     }
-
 
 }
