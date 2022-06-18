@@ -18,8 +18,12 @@ import java.io.IOException;
 
 public class API {
   private GUI gui;
-  static final String spotifyClientID = "88950e472b574f9fa0150e8e0c33637f";
-  static final String spotifyClientSecret = "e0bf6fc402ee43c797187d9c5a5727a7";
+
+  private static final String spotifyClientID = "88950e472b574f9fa0150e8e0c33637f";
+  private static final String spotifyClientSecret = "e0bf6fc402ee43c797187d9c5a5727a7";
+
+  private String apiToken = "";
+
   static public String trackID = "";
   static public String artistID = "";
 
@@ -32,7 +36,7 @@ public class API {
 
   public API() {
     try {
-      this.getSpotifyToken();
+      this.authSpotifyToken();
     } catch (ParseException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -61,7 +65,7 @@ public class API {
    * 
    * @throws org.apache.hc.core5.http.ParseException
    */
-  public void getSpotifyToken() throws org.apache.hc.core5.http.ParseException {
+  public void authSpotifyToken() throws org.apache.hc.core5.http.ParseException {
     try {
       final ClientCredentials clientCredentials = clientCredentialsRequest.execute();
 
@@ -70,9 +74,17 @@ public class API {
 
       System.out.println("Token: " + clientCredentials.getAccessToken());
       System.out.println("Expires in: " + clientCredentials.getExpiresIn());
+      this.apiToken = clientCredentials.getAccessToken();
     } catch (IOException | SpotifyWebApiException e) {
       System.out.println("Error: " + e.getMessage());
     }
+  }
+
+  /**
+   * get the Spotify API auth token
+   */
+  public String getAPIToken() {
+    return this.apiToken;
   }
 
   /**
@@ -112,7 +124,7 @@ public class API {
   /**
    * get list of genres as listed by spotify API
    * 
-   * @return
+   * @return list of genre strings
    * @throws ParseException
    */
   public String[] getGenres() throws ParseException {
@@ -127,8 +139,8 @@ public class API {
 
   /**
    * Generate spotifty API request based on genre
-   * @param genre
-   * @return
+   * @param genre - string
+   * @return list of tracks
    * @throws ParseException
    */
   public TrackSimplified[] getGenreRec(String genre) throws ParseException {
@@ -139,8 +151,8 @@ public class API {
 
   /**
    * Generate spotifty API request based on song
-   * @param song
-   * @return
+   * @param song - string
+   * @return list of tracks
    * @throws ParseException
    */
   public TrackSimplified[] getSongRec(String song) throws ParseException {
@@ -151,8 +163,8 @@ public class API {
 
   /**
    * Generate spotifty API request based on artist
-   * @param artist
-   * @return
+   * @param artist - string
+   * @return list of tracks
    * @throws ParseException
    */
   public TrackSimplified[] getArtistRec(String artist) throws ParseException {
@@ -164,7 +176,7 @@ public class API {
   /**
    * Sends request to spotify API and returns list of tracks
    * @param getRecsRequest
-   * @return
+   * @return list of tracks
    * @throws ParseException
    */
   public TrackSimplified[] getRecommendations(GetRecommendationsRequest getRecsRequest) throws ParseException {

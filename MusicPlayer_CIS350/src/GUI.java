@@ -33,7 +33,7 @@ public class GUI extends JFrame {
     /**
      * Set API to handle data from spotify
      * 
-     * @param setapi
+     * @param setapi - API
      */
     public void setAPI(API setapi) {
         this.api = setapi;
@@ -42,7 +42,7 @@ public class GUI extends JFrame {
     /**
      * Get associated API for this GUI
      * 
-     * @return
+     * @return API
      */
     public API getAPI() {
         return this.api;
@@ -321,7 +321,7 @@ public class GUI extends JFrame {
      * @param track
      * @return String
      */
-    private String generateTrackLabel(TrackSimplified track) {
+    public static String generateTrackLabel(TrackSimplified track) {
         ArtistSimplified[] artists = track.getArtists();
         String tracklabel = track.getName() + " (" + artists[0].getName() + ")";
         return tracklabel;
