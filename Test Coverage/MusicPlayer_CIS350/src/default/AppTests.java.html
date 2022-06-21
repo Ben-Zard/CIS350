@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>AppTests.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">AppTests (Jun 18, 2022 3:57:18 PM)</a> &gt; <a href="../../index.html" class="el_group">MusicPlayer_CIS350</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">AppTests.java</span></div><h1>AppTests.java</h1><pre class="source lang-java linenums">import static org.junit.Assert.*;
+
+import java.awt.Dimension;
+
+import org.junit.Test;
+
+import se.michaelthelin.spotify.model_objects.specification.TrackSimplified;
+
+<span class="fc" id="L9">public class AppTests {</span>
+
+    @Test
+    /*
+     * Test to make sure the GUI can be created without exceptions being thrown
+     */
+    public void testGUI() {
+        try {
+<span class="fc" id="L17">            GUI gui = new GUI();</span>
+<span class="fc" id="L18">            Dimension panelsize = gui.getSize();</span>
+<span class="pc bpc" id="L19" title="2 of 4 branches missed.">            assertTrue(panelsize.getWidth() == 500.0 &amp;&amp; panelsize.getHeight() == 500.0);</span>
+<span class="pc" id="L20">        } catch (Exception e) {</span>
+<span class="nc" id="L21">            fail();</span>
+        }
+<span class="fc" id="L23">    }</span>
+
+    /**
+     * Make sure that the GUI and API are both correctly setting each other as attributes
+     */
+    @Test
+    public void testGUIAPIIntegration() {
+        try {
+<span class="fc" id="L31">            GUI gui = new GUI();</span>
+<span class="fc" id="L32">            API api = gui.getAPI();</span>
+<span class="pc bpc" id="L33" title="1 of 2 branches missed.">            assertTrue(api.getGUI() == gui);</span>
+<span class="pc" id="L34">        } catch (Exception e) {</span>
+<span class="nc" id="L35">            fail();</span>
+        }
+<span class="fc" id="L37">    }</span>
+
+    /**
+     * Test if API is able to create authentication token from Spotify API
+     */
+    @Test
+    public void testConnectToken() {
+<span class="fc" id="L44">        API api = new API();</span>
+<span class="fc" id="L45">        String token = api.getAPIToken();</span>
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">        assertTrue(token.length() &gt; 0);</span>
+<span class="fc" id="L47">    }</span>
+
+    @Test
+    /**
+     * Check that generating a list of similar songs creates a list of tracks
+     */
+    public void testSongRecs() {
+<span class="fc" id="L54">        API api = new API();</span>
+        try {
+<span class="fc" id="L56">            api.searchSong(&quot;Yellow Submarine&quot;);</span>
+<span class="fc" id="L57">            TrackSimplified[] matches = api.getSongRec(api.trackID);</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">            assertTrue(matches.length &gt; 0);</span>
+<span class="pc" id="L59">        } catch (Exception e) {</span>
+<span class="nc" id="L60">            fail();</span>
+        }
+<span class="fc" id="L62">    }</span>
+
+    @Test
+    /**
+     * Check that generating a list of similar songs creates a list of tracks
+     */
+    public void testArtistRecs() {
+<span class="fc" id="L69">        API api = new API();</span>
+        try {
+<span class="fc" id="L71">            api.searchArtist(&quot;Red Hot Chili Peppers&quot;);</span>
+<span class="fc" id="L72">            TrackSimplified[] matches = api.getArtistRec(api.artistID);</span>
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">            assertTrue(matches.length &gt; 0);</span>
+<span class="pc" id="L74">        } catch (Exception e) {</span>
+<span class="nc" id="L75">            fail();</span>
+        }
+<span class="fc" id="L77">    }</span>
+
+    @Test
+    /**
+     * Check that API is able to provide list of genres
+     */
+    public void testGenreList() {
+<span class="fc" id="L84">        API api = new API();</span>
+        try {
+<span class="fc" id="L86">            String[] spotifyGenreList = api.getGenres();</span>
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">            assertTrue(spotifyGenreList.length &gt; 0);</span>
+<span class="pc" id="L88">        } catch (Exception e) {</span>
+<span class="nc" id="L89">            fail();</span>
+        }
+<span class="fc" id="L91">    }</span>
+    
+    @Test
+    /**
+     * Check that generating a list of similar songs creates a list of tracks
+     */
+    public void testGenreRecs() {
+<span class="fc" id="L98">        API api = new API();</span>
+        try {
+<span class="fc" id="L100">            String[] spotifyGenreList = api.getGenres();</span>
+<span class="fc" id="L101">            TrackSimplified[] matches = api.getGenreRec(spotifyGenreList[0]);</span>
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">            assertTrue(matches.length &gt; 0);</span>
+<span class="pc" id="L103">        } catch (Exception e) {</span>
+<span class="nc" id="L104">            fail();</span>
+        }
+<span class="fc" id="L106">    }</span>
+
+    @Test
+    /**
+     * Check that generating a displayable label from a track returned by API
+     */
+    public void testTrackLabel() {
+<span class="fc" id="L113">        API api = new API();</span>
+        try {
+<span class="fc" id="L115">            String[] spotifyGenreList = api.getGenres();</span>
+<span class="fc" id="L116">            TrackSimplified[] matches = api.getGenreRec(spotifyGenreList[0]);</span>
+<span class="fc" id="L117">            String label = GUI.generateTrackLabel(matches[0]);</span>
+<span class="pc bpc" id="L118" title="3 of 6 branches missed.">            assertTrue(label.length() &gt; 0 &amp;&amp; label.contains(&quot;(&quot;) &amp;&amp; label.contains(&quot;)&quot;));</span>
+<span class="pc" id="L119">        } catch (Exception e) {</span>
+<span class="nc" id="L120">            fail();</span>
+        }
+<span class="fc" id="L122">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>AppTests (Jun 18, 2022 3:57:18 PM)</div></body></html>

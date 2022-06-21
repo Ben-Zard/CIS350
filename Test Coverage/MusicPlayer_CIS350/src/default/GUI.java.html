@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>GUI.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">AppTests (Jun 18, 2022 3:57:18 PM)</a> &gt; <a href="../../index.html" class="el_group">MusicPlayer_CIS350</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">GUI.java</span></div><h1>GUI.java</h1><pre class="source lang-java linenums">import javazoom.jl.decoder.JavaLayerException;
+import javazoom.jl.player.advanced.AdvancedPlayer;
+import org.apache.hc.core5.http.ParseException;
+import se.michaelthelin.spotify.model_objects.specification.ArtistSimplified;
+import se.michaelthelin.spotify.model_objects.specification.TrackSimplified;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+
+public class GUI extends JFrame {
+    private API api;
+
+    public static JComboBox&lt;String&gt; localSongList;
+
+    public static JTextField songInput;
+    public static JTextField artistInput;
+
+    public static JComboBox&lt;String&gt; searchGenreList;
+
+    public static JComboBox&lt;String&gt; generatedPlaylist;
+
+<span class="fc" id="L29">    private static String musicfolder = &quot;./src/songs/&quot;;</span>
+<span class="fc" id="L30">    private static String backgroundImg = &quot;./src/img/test2.jpg&quot;;</span>
+<span class="fc" id="L31">    private static AdvancedPlayer player;</span>
+
+    /**
+     * Set API to handle data from spotify
+     * 
+     * @param setapi - API
+     */
+    public void setAPI(API setapi) {
+<span class="nc" id="L39">        this.api = setapi;</span>
+<span class="nc" id="L40">    }</span>
+
+    /**
+     * Get associated API for this GUI
+     * 
+     * @return API
+     */
+    public API getAPI() {
+<span class="fc" id="L48">        return this.api;</span>
+    }
+
+    /**
+     * Create the user interface for the spotify playlist generator
+     */
+    public GUI() {
+<span class="fc" id="L55">        super(&quot;Background image&quot;);</span>
+<span class="fc" id="L56">        this.api = new API();</span>
+<span class="fc" id="L57">        api.setGUI(this);</span>
+<span class="fc" id="L58">        Image img = Toolkit.getDefaultToolkit().getImage(backgroundImg);</span>
+<span class="fc" id="L59">        JPanel frame = new BackgroundPanel(img);</span>
+<span class="fc" id="L60">        getContentPane().add(frame);</span>
+
+<span class="fc" id="L62">        setSize(500, 500);</span>
+<span class="fc" id="L63">        GridLayout layout = new GridLayout(6, 10);</span>
+<span class="fc" id="L64">        frame.setLayout(layout);</span>
+
+        ///// Keybindings /////
+
+        // playbutton
+<span class="fc" id="L69">        InputMap play = frame.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);</span>
+<span class="fc" id="L70">        ActionMap player = frame.getActionMap();</span>
+<span class="fc" id="L71">        play.put(KeyStroke.getKeyStroke(KeyEvent.VK_1, 0), &quot;1&quot;);</span>
+<span class="fc" id="L72">        player.put(&quot;1&quot;, new AbstractAction() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+<span class="nc" id="L76">                    playSong();</span>
+<span class="nc" id="L77">                } catch (JavaLayerException ex) {</span>
+<span class="nc" id="L78">                    ex.printStackTrace();</span>
+<span class="nc" id="L79">                } catch (FileNotFoundException ex) {</span>
+<span class="nc" id="L80">                    ex.printStackTrace();</span>
+                }
+<span class="nc" id="L82">            }</span>
+        });
+        // pausebutton
+<span class="fc" id="L85">        InputMap pause = frame.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);</span>
+<span class="fc" id="L86">        ActionMap pauser = frame.getActionMap();</span>
+<span class="fc" id="L87">        pause.put(KeyStroke.getKeyStroke(KeyEvent.VK_2, 0), &quot;2&quot;);</span>
+<span class="fc" id="L88">        pauser.put(&quot;2&quot;, new AbstractAction() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L91">                pauseSong();</span>
+<span class="nc" id="L92">            }</span>
+        });
+        // prevbutton
+<span class="fc" id="L95">        InputMap prev = frame.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);</span>
+<span class="fc" id="L96">        ActionMap prever = frame.getActionMap();</span>
+<span class="fc" id="L97">        prev.put(KeyStroke.getKeyStroke(KeyEvent.VK_3, 0), &quot;3&quot;);</span>
+<span class="fc" id="L98">        prever.put(&quot;3&quot;, new AbstractAction() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // prevSong();
+<span class="nc" id="L102">            }</span>
+        });
+        // nextbutton
+<span class="fc" id="L105">        InputMap next = frame.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);</span>
+<span class="fc" id="L106">        ActionMap nexter = frame.getActionMap();</span>
+<span class="fc" id="L107">        next.put(KeyStroke.getKeyStroke(KeyEvent.VK_4, 0), &quot;4&quot;);</span>
+<span class="fc" id="L108">        nexter.put(&quot;4&quot;, new AbstractAction() {</span>
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // nextSong();
+<span class="nc" id="L112">            }</span>
+        });
+
+        // add rows
+<span class="fc" id="L116">        JPanel row1 = new JPanel();</span>
+<span class="fc" id="L117">        frame.add(row1);</span>
+<span class="fc" id="L118">        JPanel row2 = new JPanel();</span>
+<span class="fc" id="L119">        frame.add(row2);</span>
+<span class="fc" id="L120">        JPanel row3 = new JPanel();</span>
+<span class="fc" id="L121">        frame.add(row3);</span>
+<span class="fc" id="L122">        JPanel row4 = new JPanel();</span>
+<span class="fc" id="L123">        frame.add(row4);</span>
+<span class="fc" id="L124">        JPanel row5 = new JPanel();</span>
+<span class="fc" id="L125">        frame.add(row5);</span>
+<span class="fc" id="L126">        JPanel row6 = new JPanel();</span>
+<span class="fc" id="L127">        frame.add(row6);</span>
+
+        ///// Row 1 /////
+
+        // list songs
+<span class="fc" id="L132">        ArrayList&lt;String&gt; songs = new ArrayList&lt;String&gt;();</span>
+<span class="fc" id="L133">        File folder = new File(musicfolder);</span>
+<span class="fc" id="L134">        File[] listOfFiles = folder.listFiles();</span>
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">        if (listOfFiles != null) {</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">            for (File file : listOfFiles) {</span>
+<span class="fc" id="L137">                songs.add(file.getName());</span>
+            }
+        }
+
+<span class="fc" id="L141">        String[] array = songs.toArray(new String[0]);</span>
+<span class="fc" id="L142">        localSongList = new JComboBox&lt;String&gt;(array);</span>
+<span class="fc" id="L143">        localSongList.setPreferredSize(new Dimension(400, 20));</span>
+<span class="fc" id="L144">        row1.add(localSongList);</span>
+
+        ///// Row 2 /////
+
+        // genre list
+        try {
+<span class="fc" id="L150">            String[] spotifyGenreList = api.getGenres();</span>
+<span class="fc" id="L151">            searchGenreList = new JComboBox&lt;String&gt;(spotifyGenreList);</span>
+<span class="pc" id="L152">        } catch (ParseException e2) {</span>
+            // TODO Auto-generated catch block
+<span class="nc" id="L154">            e2.printStackTrace();</span>
+        }
+<span class="fc" id="L156">        searchGenreList.setPreferredSize(new Dimension(85, 20));</span>
+<span class="fc" id="L157">        JLabel genreLabel2 = new JLabel(&quot;Genres&quot;);</span>
+<span class="fc" id="L158">        row2.add(genreLabel2);</span>
+<span class="fc" id="L159">        row2.add(searchGenreList);</span>
+
+        // song inputs
+<span class="fc" id="L162">        JLabel songlabel1 = new JLabel(&quot;Select Song&quot;);</span>
+<span class="fc" id="L163">        row2.add(songlabel1);</span>
+<span class="fc" id="L164">        songInput = new JTextField();</span>
+<span class="fc" id="L165">        songInput.setPreferredSize(new Dimension(65, 15));</span>
+<span class="fc" id="L166">        row2.add(songInput);</span>
+
+        // artist input
+<span class="fc" id="L169">        JLabel artistLabel1 = new JLabel(&quot;Select Artist&quot;);</span>
+<span class="fc" id="L170">        row2.add(artistLabel1);</span>
+<span class="fc" id="L171">        artistInput = new JTextField();</span>
+<span class="fc" id="L172">        artistInput.setPreferredSize(new Dimension(65, 15));</span>
+<span class="fc" id="L173">        row2.add(artistInput);</span>
+
+        ///// Row 3 /////
+<span class="fc" id="L176">        JLabel generateLabel = new JLabel(&quot;Generate Playlist By:&quot;);</span>
+<span class="fc" id="L177">        row3.add(generateLabel);</span>
+
+<span class="fc" id="L179">        JButton genPlaylistSong = new JButton(&quot;Song&quot;);</span>
+<span class="fc" id="L180">        genPlaylistSong.addActionListener(new ActionListener() {</span>
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L182">                System.out.println(&quot;Generate playlist by song&quot;);</span>
+                // Generate playlist from song
+<span class="nc" id="L184">                String song = songInput.getText().toString();</span>
+                try {
+<span class="nc" id="L186">                    api.searchSong(song);</span>
+<span class="nc" id="L187">                    TrackSimplified[] matches = api.getSongRec(api.trackID);</span>
+<span class="nc" id="L188">                    generatedPlaylist.removeAllItems();</span>
+<span class="nc bnc" id="L189" title="All 2 branches missed.">                    if (matches.length &gt; 0) {</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">                        for (TrackSimplified t : matches) {</span>
+<span class="nc" id="L191">                            String tracklabel = generateTrackLabel(t);</span>
+<span class="nc" id="L192">                            generatedPlaylist.addItem(tracklabel);</span>
+                        }
+                    }
+<span class="nc" id="L195">                } catch (ParseException e1) {</span>
+<span class="nc" id="L196">                    e1.printStackTrace();</span>
+                }
+<span class="nc" id="L198">            }</span>
+        });
+<span class="fc" id="L200">        row3.add(genPlaylistSong);</span>
+
+<span class="fc" id="L202">        JButton genPlaylistArtist = new JButton(&quot;Artist&quot;);</span>
+<span class="fc" id="L203">        genPlaylistArtist.addActionListener(new ActionListener() {</span>
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L205">                System.out.println(&quot;Generate playlist by artist&quot;);</span>
+<span class="nc" id="L206">                System.out.println(artistInput.getText());</span>
+                // Generate playlist from artist
+<span class="nc" id="L208">                String artist = artistInput.getText().toString();</span>
+                try {
+<span class="nc" id="L210">                    api.searchArtist(artist);</span>
+<span class="nc" id="L211">                    TrackSimplified[] matches = api.getArtistRec(api.artistID);</span>
+<span class="nc" id="L212">                    generatedPlaylist.removeAllItems();</span>
+<span class="nc bnc" id="L213" title="All 2 branches missed.">                    if (matches.length &gt; 0) {</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">                        for (TrackSimplified t : matches) {</span>
+<span class="nc" id="L215">                            String tracklabel = generateTrackLabel(t);</span>
+<span class="nc" id="L216">                            generatedPlaylist.addItem(tracklabel);</span>
+                        }
+                    }
+<span class="nc" id="L219">                } catch (ParseException e1) {</span>
+<span class="nc" id="L220">                    e1.printStackTrace();</span>
+                }
+<span class="nc" id="L222">            }</span>
+        });
+<span class="fc" id="L224">        row3.add(genPlaylistArtist);</span>
+
+<span class="fc" id="L226">        JButton genPlaylistGenre = new JButton(&quot;Genre&quot;);</span>
+<span class="fc" id="L227">        genPlaylistGenre.addActionListener(new ActionListener() {</span>
+            // Generate playlist from genre
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L230">                String genre = searchGenreList.getSelectedItem().toString();</span>
+                try {
+<span class="nc" id="L232">                    TrackSimplified[] matches = api.getGenreRec(genre);</span>
+<span class="nc" id="L233">                    generatedPlaylist.removeAllItems();</span>
+<span class="nc bnc" id="L234" title="All 2 branches missed.">                    if (matches.length &gt; 0) {</span>
+<span class="nc bnc" id="L235" title="All 2 branches missed.">                        for (TrackSimplified t : matches) {</span>
+<span class="nc" id="L236">                            String tracklabel = generateTrackLabel(t);</span>
+<span class="nc" id="L237">                            generatedPlaylist.addItem(tracklabel);</span>
+                        }
+                    }
+<span class="nc" id="L240">                } catch (ParseException e1) {</span>
+                    // TODO Auto-generated catch block
+<span class="nc" id="L242">                    e1.printStackTrace();</span>
+                }
+<span class="nc" id="L244">            }</span>
+        });
+<span class="fc" id="L246">        row3.add(genPlaylistGenre);</span>
+
+        ///// Row 4 /////
+
+<span class="fc" id="L250">        JLabel playlistLabel = new JLabel(&quot;Playlist:&quot;);</span>
+<span class="fc" id="L251">        row4.add(playlistLabel);</span>
+<span class="fc" id="L252">        generatedPlaylist = new JComboBox&lt;String&gt;(new String[0]);</span>
+<span class="fc" id="L253">        generatedPlaylist.setPreferredSize(new Dimension(350, 20));</span>
+<span class="fc" id="L254">        row4.add(generatedPlaylist);</span>
+
+        ///// Row 5 /////
+
+        // song nav buttons
+<span class="fc" id="L259">        JButton playButton = new JButton();</span>
+<span class="fc" id="L260">        playButton.setText(&quot;Play&quot;);</span>
+<span class="fc" id="L261">        playButton.addActionListener(new ActionListener() {</span>
+            public void actionPerformed(ActionEvent e) {
+                try {
+<span class="nc" id="L264">                    playSong();</span>
+<span class="nc" id="L265">                } catch (FileNotFoundException | JavaLayerException e1) {</span>
+<span class="nc" id="L266">                    e1.printStackTrace();</span>
+                }
+<span class="nc" id="L268">            }</span>
+        });
+
+<span class="fc" id="L271">        JButton pauseButton = new JButton();</span>
+<span class="fc" id="L272">        pauseButton.setText(&quot;Pause&quot;);</span>
+<span class="fc" id="L273">        pauseButton.addActionListener(new ActionListener() {</span>
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L275">                pauseSong();</span>
+                // Needs to pause song but not stop it
+                // It restarts the song as of now when play is pushed again
+<span class="nc" id="L278">            }</span>
+        });
+
+<span class="fc" id="L281">        JButton prevButton = new JButton();</span>
+<span class="fc" id="L282">        prevButton.setText(&quot;Prev&quot;);</span>
+<span class="fc" id="L283">        prevButton.addActionListener(new ActionListener() {</span>
+            public void actionPerformed(ActionEvent e) {
+                // Need to figure out how to go back the song that was just played
+<span class="nc" id="L286">            }</span>
+        });
+
+<span class="fc" id="L289">        JButton nextButton = new JButton();</span>
+<span class="fc" id="L290">        nextButton.setText(&quot;Next&quot;);</span>
+<span class="fc" id="L291">        nextButton.addActionListener(new ActionListener() {</span>
+            public void actionPerformed(ActionEvent e) {
+                // Need to figure out how to go to next song in the list
+<span class="nc" id="L294">            }</span>
+        });
+
+<span class="fc" id="L297">        row5.add(playButton);</span>
+<span class="fc" id="L298">        row5.add(pauseButton);</span>
+<span class="fc" id="L299">        row5.add(prevButton);</span>
+<span class="fc" id="L300">        row5.add(nextButton);</span>
+
+        ///// Row 6 /////
+
+        // progress bar
+<span class="fc" id="L305">        JProgressBar progressBar = new JProgressBar();</span>
+<span class="fc" id="L306">        row6.add(progressBar);</span>
+
+<span class="fc" id="L308">        row1.setOpaque(false);</span>
+<span class="fc" id="L309">        row3.setOpaque(false);</span>
+<span class="fc" id="L310">        row2.setOpaque(false);</span>
+<span class="fc" id="L311">        row4.setOpaque(false);</span>
+<span class="fc" id="L312">        row5.setOpaque(false);</span>
+<span class="fc" id="L313">        row6.setOpaque(false);</span>
+        // Start
+<span class="fc" id="L315">        setVisible(true);</span>
+<span class="fc" id="L316">    }</span>
+
+    /**
+     * Generate a track label string from track object
+     * 
+     * @param track
+     * @return String
+     */
+    public static String generateTrackLabel(TrackSimplified track) {
+<span class="fc" id="L325">        ArtistSimplified[] artists = track.getArtists();</span>
+<span class="fc" id="L326">        String tracklabel = track.getName() + &quot; (&quot; + artists[0].getName() + &quot;)&quot;;</span>
+<span class="fc" id="L327">        return tracklabel;</span>
+    }
+
+    /**
+     * Play local audio foile
+     * https://github.com/manjurulhoque/play-mp3-java
+     * 
+     * @throws JavaLayerException
+     * @throws FileNotFoundException
+     */
+    public static void playSong() throws JavaLayerException, FileNotFoundException {
+<span class="nc" id="L338">        String selectedSong = musicfolder + localSongList.getSelectedItem().toString();</span>
+<span class="nc" id="L339">        FileInputStream fis = new FileInputStream(selectedSong);</span>
+
+<span class="nc" id="L341">        player = new AdvancedPlayer(fis);</span>
+<span class="nc" id="L342">        new Thread() {</span>
+            public void run() {
+                try {
+<span class="nc" id="L345">                    player.play();</span>
+<span class="nc" id="L346">                } catch (JavaLayerException e) {</span>
+<span class="nc" id="L347">                    e.printStackTrace();</span>
+                }
+<span class="nc" id="L349">            }</span>
+<span class="nc" id="L350">        }.start();</span>
+<span class="nc" id="L351">    }</span>
+
+    /**
+     * Stop playing song
+     */
+    public static void pauseSong() {
+<span class="nc" id="L357">        player.close();</span>
+        // Needs to just pause the song and not stop it
+<span class="nc" id="L359">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>AppTests (Jun 18, 2022 3:57:18 PM)</div></body></html>

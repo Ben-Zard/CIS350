@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>API.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">AppTests (Jun 18, 2022 3:57:18 PM)</a> &gt; <a href="../../index.html" class="el_group">MusicPlayer_CIS350</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">API.java</span></div><h1>API.java</h1><pre class="source lang-java linenums">import se.michaelthelin.spotify.SpotifyApi;
+import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
+import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials;
+import se.michaelthelin.spotify.model_objects.specification.Artist;
+import se.michaelthelin.spotify.model_objects.specification.Paging;
+import se.michaelthelin.spotify.model_objects.specification.Recommendations;
+import se.michaelthelin.spotify.model_objects.specification.Track;
+import se.michaelthelin.spotify.model_objects.specification.TrackSimplified;
+import se.michaelthelin.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
+import se.michaelthelin.spotify.requests.data.browse.GetRecommendationsRequest;
+import se.michaelthelin.spotify.requests.data.browse.miscellaneous.GetAvailableGenreSeedsRequest;
+import se.michaelthelin.spotify.requests.data.search.simplified.SearchArtistsRequest;
+import se.michaelthelin.spotify.requests.data.search.simplified.SearchTracksRequest;
+
+import org.apache.hc.core5.http.ParseException;
+
+import java.io.IOException;
+
+public class API {
+  private GUI gui;
+
+  private static final String spotifyClientID = &quot;88950e472b574f9fa0150e8e0c33637f&quot;;
+  private static final String spotifyClientSecret = &quot;e0bf6fc402ee43c797187d9c5a5727a7&quot;;
+
+<span class="fc" id="L25">  private String apiToken = &quot;&quot;;</span>
+
+<span class="fc" id="L27">  static public String trackID = &quot;&quot;;</span>
+<span class="fc" id="L28">  static public String artistID = &quot;&quot;;</span>
+
+<span class="fc" id="L30">  private static final SpotifyApi spotifyApi = new SpotifyApi.Builder()</span>
+<span class="fc" id="L31">      .setClientId(spotifyClientID)</span>
+<span class="fc" id="L32">      .setClientSecret(spotifyClientSecret)</span>
+<span class="fc" id="L33">      .build();</span>
+<span class="fc" id="L34">  private static final ClientCredentialsRequest clientCredentialsRequest = spotifyApi.clientCredentials()</span>
+<span class="fc" id="L35">      .build();</span>
+
+<span class="fc" id="L37">  public API() {</span>
+    try {
+<span class="fc" id="L39">      this.authSpotifyToken();</span>
+<span class="pc" id="L40">    } catch (ParseException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L42">      e.printStackTrace();</span>
+    }
+<span class="fc" id="L44">  }</span>
+
+  /**
+   * Set the GUI
+   * @param setgui
+   */
+  public void setGUI(GUI setgui) {
+<span class="fc" id="L51">    this.gui = setgui;</span>
+<span class="fc" id="L52">  }</span>
+
+  /**
+   * Get the GUI
+   * @return
+   */
+  public GUI getGUI() {
+<span class="fc" id="L59">    return gui;</span>
+  }
+
+  /**
+   * generate token for authentication to spotify API
+   * https://github.com/spotify-web-api-java/spotify-web-api-java#Documentation
+   * 
+   * @throws org.apache.hc.core5.http.ParseException
+   */
+  public void authSpotifyToken() throws org.apache.hc.core5.http.ParseException {
+    try {
+<span class="fc" id="L70">      final ClientCredentials clientCredentials = clientCredentialsRequest.execute();</span>
+
+      // Set access token for further &quot;spotifyApi&quot; object usage
+<span class="fc" id="L73">      spotifyApi.setAccessToken(clientCredentials.getAccessToken());</span>
+
+<span class="fc" id="L75">      System.out.println(&quot;Token: &quot; + clientCredentials.getAccessToken());</span>
+<span class="fc" id="L76">      System.out.println(&quot;Expires in: &quot; + clientCredentials.getExpiresIn());</span>
+<span class="fc" id="L77">      this.apiToken = clientCredentials.getAccessToken();</span>
+<span class="pc" id="L78">    } catch (IOException | SpotifyWebApiException e) {</span>
+<span class="nc" id="L79">      System.out.println(&quot;Error: &quot; + e.getMessage());</span>
+    }
+<span class="fc" id="L81">  }</span>
+
+  /**
+   * get the Spotify API auth token
+   */
+  public String getAPIToken() {
+<span class="fc" id="L87">    return this.apiToken;</span>
+  }
+
+  /**
+   * get list of similar songs based on string input
+   * 
+   * @param title
+   * @throws org.apache.hc.core5.http.ParseException
+   */
+  public void searchSong(String title) throws org.apache.hc.core5.http.ParseException {
+<span class="fc" id="L97">    SearchTracksRequest searchTracksRequest = spotifyApi.searchTracks(title).build();</span>
+    try {
+<span class="fc" id="L99">      final Paging&lt;Track&gt; trackPaging = searchTracksRequest.execute();</span>
+<span class="fc" id="L100">      System.out.println(&quot;Total: &quot; + trackPaging.getTotal());</span>
+<span class="fc" id="L101">      trackID = trackPaging.getItems()[0].getId();</span>
+<span class="pc" id="L102">    } catch (IOException | SpotifyWebApiException e) {</span>
+<span class="nc" id="L103">      System.out.println(&quot;Error: &quot; + e.getMessage());</span>
+    }
+<span class="fc" id="L105">  }</span>
+
+  /**
+   * get list of similar artists based on string input
+   * 
+   * @param title
+   * @throws org.apache.hc.core5.http.ParseException
+   */
+  public void searchArtist(String title) throws org.apache.hc.core5.http.ParseException {
+<span class="fc" id="L114">    SearchArtistsRequest searchArtistRequest = spotifyApi.searchArtists(title).build();</span>
+    try {
+<span class="fc" id="L116">      final Paging&lt;Artist&gt; artistPaging = searchArtistRequest.execute();</span>
+<span class="fc" id="L117">      System.out.println(&quot;Total: &quot; + artistPaging.getTotal());</span>
+<span class="fc" id="L118">      artistID = artistPaging.getItems()[0].getId();</span>
+<span class="pc" id="L119">    } catch (IOException | SpotifyWebApiException e) {</span>
+<span class="nc" id="L120">      System.out.println(&quot;Error: &quot; + e.getMessage());</span>
+    }
+<span class="fc" id="L122">  }</span>
+
+  /**
+   * get list of genres as listed by spotify API
+   * 
+   * @return list of genre strings
+   * @throws ParseException
+   */
+  public String[] getGenres() throws ParseException {
+<span class="fc" id="L131">    GetAvailableGenreSeedsRequest getGenresRequest = spotifyApi.getAvailableGenreSeeds().build();</span>
+    try {
+<span class="fc" id="L133">      return getGenresRequest.execute();</span>
+<span class="nc" id="L134">    } catch (IOException | SpotifyWebApiException e) {</span>
+<span class="nc" id="L135">      System.out.println(&quot;Error: &quot; + e.getMessage());</span>
+    }
+<span class="nc" id="L137">    return null;</span>
+  }
+
+  /**
+   * Generate spotifty API request based on genre
+   * @param genre - string
+   * @return list of tracks
+   * @throws ParseException
+   */
+  public TrackSimplified[] getGenreRec(String genre) throws ParseException {
+<span class="fc" id="L147">    GetRecommendationsRequest getRecsRequest = spotifyApi.getRecommendations().seed_genres(genre).build();</span>
+<span class="fc" id="L148">    TrackSimplified[] tracks = getRecommendations(getRecsRequest);</span>
+<span class="fc" id="L149">    return tracks;</span>
+  }
+
+  /**
+   * Generate spotifty API request based on song
+   * @param song - string
+   * @return list of tracks
+   * @throws ParseException
+   */
+  public TrackSimplified[] getSongRec(String song) throws ParseException {
+<span class="fc" id="L159">    GetRecommendationsRequest getRecsRequest = spotifyApi.getRecommendations().seed_tracks(song).build();</span>
+<span class="fc" id="L160">    TrackSimplified[] tracks = getRecommendations(getRecsRequest);</span>
+<span class="fc" id="L161">    return tracks;</span>
+  }
+
+  /**
+   * Generate spotifty API request based on artist
+   * @param artist - string
+   * @return list of tracks
+   * @throws ParseException
+   */
+  public TrackSimplified[] getArtistRec(String artist) throws ParseException {
+<span class="fc" id="L171">    GetRecommendationsRequest getRecsRequest = spotifyApi.getRecommendations().seed_artists(artist).build();</span>
+<span class="fc" id="L172">    TrackSimplified[] tracks = getRecommendations(getRecsRequest);</span>
+<span class="fc" id="L173">    return tracks;</span>
+  }
+
+  /**
+   * Sends request to spotify API and returns list of tracks
+   * @param getRecsRequest
+   * @return list of tracks
+   * @throws ParseException
+   */
+  public TrackSimplified[] getRecommendations(GetRecommendationsRequest getRecsRequest) throws ParseException {
+    try {
+<span class="fc" id="L184">      final Recommendations recsList = getRecsRequest.execute();</span>
+<span class="fc" id="L185">      return recsList.getTracks();</span>
+<span class="nc" id="L186">    } catch (IOException | SpotifyWebApiException e) {</span>
+<span class="nc" id="L187">      System.out.println(&quot;Error: &quot; + e.getMessage());</span>
+    }
+<span class="nc" id="L189">    return null;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>AppTests (Jun 18, 2022 3:57:18 PM)</div></body></html>

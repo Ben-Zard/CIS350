@@ -328,7 +328,7 @@ public class GUI extends JFrame {
     }
 
     /**
-     * Play local audio foile
+     * Play local audio file
      * https://github.com/manjurulhoque/play-mp3-java
      * 
      * @throws JavaLayerException
@@ -355,7 +355,6 @@ public class GUI extends JFrame {
      */
     public static void pauseSong() {
         player.close();
-        // Needs to just pause the song and not stop it
     }
 
 }
