@@ -8,6 +8,7 @@
 int backPin = 9;                  // Set button pins
 int pausePin = 10;
 int forwardPin = 4;
+int toggle = 1;
 
 /**
  * @brief One-time initialization of pins and keyboard drivers.
@@ -35,27 +36,27 @@ void loop()
 {
   if (digitalRead(backPin) == 0)  // if the button goes low
   {
-    Keyboard.press(KEY_LEFT_CTRL);
-    Keyboard.press(KEY_LEFT_ARROW);
-
-    Keyboard.release(KEY_LEFT_CTRL);
-    Keyboard.release(KEY_LEFT_ARROW);
+    Keyboard.write('3');
 
     delay(300);
   }
   if (digitalRead(pausePin) == 0)  
   {
-    Keyboard.write(' ');
-
+    if(toggle) 
+    {
+      Keyboard.write('1');
+      toggle = 0;
+    }
+    else
+    {
+      keyboard.write('2');
+      toggle = 0;
+    }
     delay(300);
   }
   if (digitalRead(forwardPin) == 0)  
   {
-    Keyboard.press(KEY_LEFT_CTRL);
-    Keyboard.press(KEY_RIGHT_ARROW);
-
-    Keyboard.release(KEY_LEFT_CTRL);
-    Keyboard.release(KEY_RIGHT_ARROW);
+    Keyboard.write('4');
 
     delay(300);
   }
