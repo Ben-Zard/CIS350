@@ -9,6 +9,10 @@ int backPin = 9;                  // Set button pins
 int pausePin = 10;
 int forwardPin = 4;
 
+/**
+ * @brief One-time initialization of pins and keyboard drivers.
+ * 
+ */
 void setup()
 {
   pinMode(backPin, INPUT);        // Set the button as an input
@@ -23,6 +27,10 @@ void setup()
   Keyboard.begin();               //Init keyboard emulation
 }
 
+/**
+ * @brief Continuous looping body, takes in button input and injects corresponding keystrokes.
+ * 
+ */
 void loop()
 {
   if (digitalRead(backPin) == 0)  // if the button goes low
